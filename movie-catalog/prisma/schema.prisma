@@ -12,3 +12,114 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Movie {
+  id Int @id @default(autoincrement())
+  title String
+  alternativeTitle String
+  release DateTime
+  description String
+  rating Float
+  duration Float
+  numberOfEpisodes Int
+  ageLimit Int
+  posterUrl String
+
+  type Type @relation(fields: [typeId], references: [id])
+  typeId Int
+
+  status Status @relation(fields: [statusId], references: [id])
+  statusId Int
+
+  genres GenreOfMovie[]
+  countries CountryOfProduction[]
+  participants Participant[]
+}
+
+model Genre {
+  id Int @id @default(autoincrement())
+  title String
+
+  movies GenreOfMovie[]
+}
+
+model GenreOfMovie {
+  movie Movie @relation(fields: [movieId], references: [id])
+  movieId Int
+
+  genre Genre @relation(fields: [genreId], references: [id])
+  genreId Int
+
+  @@id([movieId, genreId])
+}
+
+model Country {
+  id Int @id @default(autoincrement())
+  title String
+
+  movies CountryOfProduction[]
+}
+
+model CountryOfProduction {
+  movie Movie @relation(fields: [movieId], references: [id])
+  movieId Int
+
+  country Country @relation(fields: [countryId], references: [id])
+  countryId Int
+
+  @@id([movieId, countryId])
+}
+
+model Type {
+  id Int @id @default(autoincrement())
+  title String
+
+  movies Movie[]
+}
+
+model Status {
+  id Int @id @default(autoincrement())
+  title String
+
+  movies Movie[]
+}
+
+model Sex {
+  id Int @id @default(autoincrement())
+  title String
+
+  persons Person[]
+}
+
+model Person {
+  id Int @id @default(autoincrement())
+  name String
+  birthday DateTime
+  dateOfDeath DateTime
+
+  sex Sex @relation(fields: [sexId], references: [id])
+  sexId Int
+
+  participants Participant[]
+}
+
+model Profession {
+  id Int @id @default(autoincrement())
+  title String
+
+  participants Participant[]
+}
+
+model Participant {
+  id Int @id @default(autoincrement())
+  character String?
+  
+  profession Profession @relation(fields: [professionId], references: [id])
+  professionId Int
+
+  movie Movie @relation(fields: [movieId], references: [id])
+  movieId Int
+
+  person Person @relation(fields: [personId], references: [id])
+  personId Int
+}

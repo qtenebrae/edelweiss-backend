@@ -93,7 +93,9 @@ model Sex {
 
 model Person {
   id Int @id @default(autoincrement())
-  name String
+  fisrtname String
+  lastname String
+  middlename String
   birthday DateTime
   dateOfDeath DateTime
 

@@ -75,7 +75,9 @@ CREATE TABLE "Sex" (
 -- CreateTable
 CREATE TABLE "Person" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "fisrtname" TEXT NOT NULL,
+    "lastname" TEXT NOT NULL,
+    "middlename" TEXT NOT NULL,
     "birthday" TIMESTAMP(3) NOT NULL,
     "dateOfDeath" TIMESTAMP(3) NOT NULL,
     "sexId" INTEGER NOT NULL,

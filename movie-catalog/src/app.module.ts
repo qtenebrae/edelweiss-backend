@@ -3,8 +3,19 @@ import { PersonModule } from './person/person.module';
 import { ProfessionModule } from './profession/profession.module';
 import { SexModule } from './sex/sex.module';
 import { GenreModule } from './genre/genre.module';
+import { StatusModule } from './status/status.module';
+import { CountryModule } from './country/country.module';
+import { TypeModule } from './type/type.module';
 
 @Module({
-	imports: [PersonModule, ProfessionModule, SexModule, GenreModule],
+	imports: [
+		PersonModule,
+		ProfessionModule,
+		SexModule,
+		GenreModule,
+		StatusModule,
+		CountryModule,
+		TypeModule,
+	],
 })
 export class AppModule {}

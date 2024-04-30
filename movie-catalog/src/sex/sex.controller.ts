@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, ValidationPipe } from '@nestjs/common';
 import { SexService } from './sex.service';
-import { Profession, Sex } from '@prisma/client';
+import { Sex } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateSexDto } from './dto/create-sex.dto';
 import { UpdateSexDto } from './dto/update-sex.dto';
@@ -12,8 +12,8 @@ export class SexController {
 	constructor(private sexService: SexService) {}
 
 	@Post('create')
-	async create(@Body(new ValidationPipe()) createSexDto: CreateSexDto): Promise<Profession> {
-		return this.sexService.create(createSexDto);
+	async create(@Body(new ValidationPipe()) createSexDto: CreateSexDto): Promise<Sex> {
+		return this.sexService.create({ title: createSexDto.title });
 	}
 
 	@Get('findAll')
@@ -28,11 +28,14 @@ export class SexController {
 
 	@Put('update')
 	async update(@Body(new ValidationPipe()) updateSexDto: UpdateSexDto): Promise<Sex> {
-		return this.sexService.update(updateSexDto);
+		return this.sexService.update({
+			where: { id: Number(updateSexDto.id) },
+			data: { title: updateSexDto.title },
+		});
 	}
 
 	@Delete('delete')
 	async delete(@Body(new ValidationPipe()) deleteSexDto: DeleteSexDto): Promise<Sex> {
-		return this.sexService.delete(deleteSexDto);
+		return this.sexService.delete({ id: Number(deleteSexDto.id) });
 	}
 }

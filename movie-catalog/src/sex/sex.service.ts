@@ -1,19 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { Sex } from '@prisma/client';
-import { CreateSexDto } from './dto/create-sex.dto';
-import { UpdateSexDto } from './dto/update-sex.dto';
-import { DeleteSexDto } from './dto/delete-sex.dto';
+import { Sex, Prisma } from '@prisma/client';
 
 @Injectable()
 export class SexService {
 	constructor(private prisma: PrismaService) {}
 
-	async create(createSexDto: CreateSexDto): Promise<Sex> {
+	async create(data: Prisma.SexCreateInput): Promise<Sex> {
 		return this.prisma.sex.create({
-			data: {
-				title: createSexDto.title,
-			},
+			data,
 		});
 	}
 
@@ -22,17 +17,35 @@ export class SexService {
 	}
 
 	async findById(id: number): Promise<Sex> {
-		return this.prisma.sex.findUnique({ where: { id: Number(id) } });
+		const sexExists = await this.prisma.sex.findUnique({ where: { id: Number(id) } });
+		if (!sexExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+		return sexExists;
 	}
 
-	async update(updateSexDto: UpdateSexDto): Promise<Sex> {
+	async update(params: {
+		where: Prisma.SexWhereUniqueInput;
+		data: Prisma.SexUpdateInput;
+	}): Promise<Sex> {
+		const { where, data } = params;
+		const sexExists = await this.prisma.sex.findUnique({ where });
+		if (!sexExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.prisma.sex.update({
-			data: { title: updateSexDto.title },
-			where: { id: Number(updateSexDto.id) },
+			data,
+			where,
 		});
 	}
 
-	async delete(deleteSexDto: DeleteSexDto): Promise<Sex> {
-		return this.prisma.sex.delete({ where: { id: Number(deleteSexDto.id) } });
+	async delete(where: Prisma.SexWhereUniqueInput): Promise<Sex> {
+		const sexExists = await this.prisma.sex.findUnique({ where });
+		if (!sexExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.prisma.sex.delete({ where });
 	}
 }

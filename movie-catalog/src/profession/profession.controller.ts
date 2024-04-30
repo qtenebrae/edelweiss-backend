@@ -15,7 +15,7 @@ export class ProfessionController {
 	async create(
 		@Body(new ValidationPipe()) createProfessionDto: CreateProfessionDto,
 	): Promise<Profession> {
-		return this.professionService.create(createProfessionDto);
+		return this.professionService.create({ title: createProfessionDto.title });
 	}
 
 	@Get('findAll')
@@ -32,13 +32,16 @@ export class ProfessionController {
 	async update(
 		@Body(new ValidationPipe()) updateProfessionDto: UpdateProfessionDto,
 	): Promise<Profession> {
-		return this.professionService.update(updateProfessionDto);
+		return this.professionService.update({
+			where: { id: Number(updateProfessionDto.id) },
+			data: { title: updateProfessionDto.title },
+		});
 	}
 
 	@Delete('delete')
 	async delete(
 		@Body(new ValidationPipe()) deleteProfessionDto: DeleteProfessionDto,
 	): Promise<Profession> {
-		return this.professionService.delete(deleteProfessionDto);
+		return this.professionService.delete({ id: Number(deleteProfessionDto.id) });
 	}
 }

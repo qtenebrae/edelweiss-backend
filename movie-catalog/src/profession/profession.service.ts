@@ -1,19 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { Profession } from '@prisma/client';
-import { CreateProfessionDto } from './dto/create-profession.dto';
-import { UpdateProfessionDto } from './dto/update-profession.dto';
-import { DeleteProfessionDto } from './dto/delete-profession.dto';
+import { Profession, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProfessionService {
 	constructor(private prisma: PrismaService) {}
 
-	async create(createProfessionDto: CreateProfessionDto): Promise<Profession> {
+	async create(data: Prisma.ProfessionCreateInput): Promise<Profession> {
 		return this.prisma.profession.create({
-			data: {
-				title: createProfessionDto.title,
-			},
+			data,
 		});
 	}
 
@@ -22,19 +17,37 @@ export class ProfessionService {
 	}
 
 	async findById(id: number): Promise<Profession> {
-		return this.prisma.profession.findUnique({ where: { id: Number(id) } });
+		const professionExists = await this.prisma.profession.findUnique({ where: { id: Number(id) } });
+		if (!professionExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+		return professionExists;
 	}
 
-	async update(updateProfessionDto: UpdateProfessionDto): Promise<Profession> {
+	async update(params: {
+		where: Prisma.ProfessionWhereUniqueInput;
+		data: Prisma.ProfessionUpdateInput;
+	}): Promise<Profession> {
+		const { where, data } = params;
+		const professionExists = await this.prisma.profession.findUnique({ where });
+		if (!professionExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.prisma.profession.update({
-			data: { title: updateProfessionDto.title },
-			where: { id: Number(updateProfessionDto.id) },
+			data,
+			where,
 		});
 	}
 
-	async delete(deleteProfessionDto: DeleteProfessionDto): Promise<Profession> {
+	async delete(where: Prisma.ProfessionWhereUniqueInput): Promise<Profession> {
+		const professionExists = await this.prisma.profession.findUnique({ where });
+		if (!professionExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.prisma.profession.delete({
-			where: { id: Number(deleteProfessionDto.id) },
+			where,
 		});
 	}
 }

@@ -6,6 +6,7 @@ import { GenreModule } from './genre/genre.module';
 import { StatusModule } from './status/status.module';
 import { CountryModule } from './country/country.module';
 import { TypeModule } from './type/type.module';
+import { MovieModule } from './movie/movie.module';
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { TypeModule } from './type/type.module';
 		StatusModule,
 		CountryModule,
 		TypeModule,
+		MovieModule,
 	],
 })
 export class AppModule {}

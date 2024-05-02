@@ -7,6 +7,7 @@ import { StatusModule } from './status/status.module';
 import { CountryModule } from './country/country.module';
 import { TypeModule } from './type/type.module';
 import { MovieModule } from './movie/movie.module';
+import { ParticipantModule } from './participant/participant.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { MovieModule } from './movie/movie.module';
 		CountryModule,
 		TypeModule,
 		MovieModule,
+		ParticipantModule,
 	],
 })
 export class AppModule {}

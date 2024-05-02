@@ -71,9 +71,9 @@ export class MovieController {
 		if (updateMovieDto.ageLimit !== undefined) data['ageLimit'] = updateMovieDto.ageLimit;
 		if (updateMovieDto.posterUrl !== undefined) data['posterUrl'] = updateMovieDto.posterUrl;
 		if (updateMovieDto.typeId !== undefined)
-			data['typeId'] = { connect: { id: Number(updateMovieDto.typeId) } };
+			data['type'] = { connect: { id: Number(updateMovieDto.typeId) } };
 		if (updateMovieDto.statusId !== undefined)
-			data['statusId'] = { connect: { id: Number(updateMovieDto.statusId) } };
+			data['status'] = { connect: { id: Number(updateMovieDto.statusId) } };
 
 		return this.movieService.update({
 			where: { id: Number(updateMovieDto.id) },

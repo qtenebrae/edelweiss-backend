@@ -12,7 +12,6 @@ import { getMongoConfig } from './configs/mongo.config';
 			inject: [ConfigService],
 			useFactory: getMongoConfig,
 		}),
-
 		AuthModule,
 	],
 })

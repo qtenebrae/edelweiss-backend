@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Put,
@@ -22,7 +23,7 @@ export class MovieController {
 	constructor(private movieService: MovieService) {}
 
 	@Post('create')
-	@HttpCode(201)
+	@HttpCode(HttpStatus.CREATED)
 	async create(@Body(new ValidationPipe()) createMovieDto: CreateMovieDto): Promise<Movie> {
 		return this.movieService.create({
 			title: createMovieDto.title,
@@ -44,19 +45,19 @@ export class MovieController {
 	}
 
 	@Get('findAll')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async findAll(): Promise<Movie[]> {
 		return this.movieService.findAll();
 	}
 
 	@Get('findById/:id')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Movie> {
 		return this.movieService.findById(id);
 	}
 
 	@Put('update')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateMovieDto: UpdateMovieDto): Promise<Movie> {
 		const data = {};
 		if (updateMovieDto.title !== undefined) data['title'] = updateMovieDto.title;
@@ -82,7 +83,7 @@ export class MovieController {
 	}
 
 	@Delete('delete')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteMovieDto: DeleteMovieDto): Promise<Movie> {
 		return this.movieService.delete({ id: Number(deleteMovieDto.id) });
 	}

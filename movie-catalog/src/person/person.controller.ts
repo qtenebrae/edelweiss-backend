@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Put,
@@ -22,7 +23,7 @@ export class PersonController {
 	constructor(private personService: PersonService) {}
 
 	@Post('create')
-	@HttpCode(201)
+	@HttpCode(HttpStatus.CREATED)
 	async create(@Body(new ValidationPipe()) createPersonDto: CreatePersonDto): Promise<Person> {
 		return this.personService.create({
 			firstname: createPersonDto.firstname,
@@ -37,19 +38,19 @@ export class PersonController {
 	}
 
 	@Get('findAll')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async findAll(): Promise<Person[]> {
 		return this.personService.findAll();
 	}
 
 	@Get('findById/:id')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Person> {
 		return this.personService.findById(id);
 	}
 
 	@Put('update')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto): Promise<Person> {
 		const data = {};
 		if (updatePersonDto.firstname !== undefined) {
@@ -78,7 +79,7 @@ export class PersonController {
 	}
 
 	@Delete('delete')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deletePersonDto: DeletePersonDto): Promise<Person> {
 		return this.personService.delete({ id: Number(deletePersonDto.id) });
 	}

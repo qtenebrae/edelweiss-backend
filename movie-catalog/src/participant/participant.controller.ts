@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Put,
@@ -22,7 +23,7 @@ export class ParticipantController {
 	constructor(private participantService: ParticipantService) {}
 
 	@Post('create')
-	@HttpCode(201)
+	@HttpCode(HttpStatus.CREATED)
 	async create(
 		@Body(new ValidationPipe()) createParticipantDto: CreateParticipantDto,
 	): Promise<Participant> {
@@ -41,19 +42,19 @@ export class ParticipantController {
 	}
 
 	@Get('findAll')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async findAll(): Promise<Participant[]> {
 		return this.participantService.findAll();
 	}
 
 	@Get('findById/:id')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Participant> {
 		return this.participantService.findById(id);
 	}
 
 	@Put('update')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async update(
 		@Body(new ValidationPipe()) updateParticipantDto: UpdateParticipantDto,
 	): Promise<Participant> {
@@ -75,7 +76,7 @@ export class ParticipantController {
 	}
 
 	@Delete('delete')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async delete(
 		@Body(new ValidationPipe()) deleteParticipantDto: DeleteParticipantDto,
 	): Promise<Participant> {

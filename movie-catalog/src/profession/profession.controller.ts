@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ValidationPipe } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Put,
+	ValidationPipe,
+} from '@nestjs/common';
 import { ProfessionService } from './profession.service';
 import { Profession } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
@@ -12,6 +23,7 @@ export class ProfessionController {
 	constructor(private professionService: ProfessionService) {}
 
 	@Post('create')
+	@HttpCode(HttpStatus.CREATED)
 	async create(
 		@Body(new ValidationPipe()) createProfessionDto: CreateProfessionDto,
 	): Promise<Profession> {
@@ -19,16 +31,19 @@ export class ProfessionController {
 	}
 
 	@Get('findAll')
+	@HttpCode(HttpStatus.OK)
 	async findAll(): Promise<Profession[]> {
 		return this.professionService.findAll();
 	}
 
 	@Get('findById/:id')
+	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Profession> {
 		return this.professionService.findById(id);
 	}
 
 	@Put('update')
+	@HttpCode(HttpStatus.OK)
 	async update(
 		@Body(new ValidationPipe()) updateProfessionDto: UpdateProfessionDto,
 	): Promise<Profession> {
@@ -39,6 +54,7 @@ export class ProfessionController {
 	}
 
 	@Delete('delete')
+	@HttpCode(HttpStatus.OK)
 	async delete(
 		@Body(new ValidationPipe()) deleteProfessionDto: DeleteProfessionDto,
 	): Promise<Profession> {

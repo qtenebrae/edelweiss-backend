@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { Profession, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProfessionService {
-	constructor(private prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService) {}
 
 	async create(data: Prisma.ProfessionCreateInput): Promise<Profession> {
 		return this.prisma.profession.create({
@@ -17,11 +17,7 @@ export class ProfessionService {
 	}
 
 	async findById(id: number): Promise<Profession> {
-		const professionExists = await this.prisma.profession.findUnique({ where: { id: Number(id) } });
-		if (!professionExists) {
-			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-		}
-		return professionExists;
+		return await this.prisma.profession.findUnique({ where: { id: Number(id) } });
 	}
 
 	async update(params: {
@@ -29,10 +25,6 @@ export class ProfessionService {
 		data: Prisma.ProfessionUpdateInput;
 	}): Promise<Profession> {
 		const { where, data } = params;
-		const professionExists = await this.prisma.profession.findUnique({ where });
-		if (!professionExists) {
-			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-		}
 
 		return this.prisma.profession.update({
 			data,
@@ -41,11 +33,6 @@ export class ProfessionService {
 	}
 
 	async delete(where: Prisma.ProfessionWhereUniqueInput): Promise<Profession> {
-		const professionExists = await this.prisma.profession.findUnique({ where });
-		if (!professionExists) {
-			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-		}
-
 		return this.prisma.profession.delete({
 			where,
 		});

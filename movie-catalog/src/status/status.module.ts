@@ -7,5 +7,6 @@ import { DatabaseModule } from 'src/database/database.module';
 	controllers: [StatusController],
 	providers: [StatusService],
 	imports: [DatabaseModule],
+	exports: [StatusService],
 })
 export class StatusModule {}

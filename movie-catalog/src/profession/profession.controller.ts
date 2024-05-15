@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpException,
 	HttpStatus,
 	Param,
 	Post,
@@ -20,7 +21,7 @@ import { DeleteProfessionDto } from './dto/delete-profession.dto';
 @Controller('profession')
 @ApiTags('Profession')
 export class ProfessionController {
-	constructor(private professionService: ProfessionService) {}
+	constructor(private readonly professionService: ProfessionService) {}
 
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
@@ -39,7 +40,12 @@ export class ProfessionController {
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Profession> {
-		return this.professionService.findById(id);
+		const professionExists = await this.professionService.findById(Number(id));
+		if (!professionExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return professionExists;
 	}
 
 	@Put('update')
@@ -47,8 +53,13 @@ export class ProfessionController {
 	async update(
 		@Body(new ValidationPipe()) updateProfessionDto: UpdateProfessionDto,
 	): Promise<Profession> {
+		const professionExists = await this.professionService.findById(Number(updateProfessionDto.id));
+		if (!professionExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.professionService.update({
-			where: { id: Number(updateProfessionDto.id) },
+			where: { id: updateProfessionDto.id },
 			data: { title: updateProfessionDto.title },
 		});
 	}
@@ -58,6 +69,11 @@ export class ProfessionController {
 	async delete(
 		@Body(new ValidationPipe()) deleteProfessionDto: DeleteProfessionDto,
 	): Promise<Profession> {
-		return this.professionService.delete({ id: Number(deleteProfessionDto.id) });
+		const professionExists = await this.professionService.findById(Number(deleteProfessionDto.id));
+		if (!professionExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.professionService.delete({ id: deleteProfessionDto.id });
 	}
 }

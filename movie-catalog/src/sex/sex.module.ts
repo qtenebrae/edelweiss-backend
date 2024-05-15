@@ -7,5 +7,6 @@ import { DatabaseModule } from 'src/database/database.module';
 	controllers: [SexController],
 	providers: [SexService],
 	imports: [DatabaseModule],
+	exports: [SexService],
 })
 export class SexModule {}

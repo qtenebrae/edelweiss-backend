@@ -20,7 +20,7 @@ class Profile {
 
 class Settings {
 	language?: string;
-	notigications?: boolean;
+	notifications?: boolean;
 }
 
 export interface UserModel extends Base {}

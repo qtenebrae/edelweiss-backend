@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpException,
 	HttpStatus,
 	Param,
 	Post,
@@ -20,7 +21,7 @@ import { DeleteCountryDto } from './dto/delete-country.dto';
 @Controller('country')
 @ApiTags('Country')
 export class CountryController {
-	constructor(private countryService: CountryService) {}
+	constructor(private readonly countryService: CountryService) {}
 
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
@@ -37,14 +38,24 @@ export class CountryController {
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Country> {
-		return this.countryService.findById(id);
+		const countryExists = await this.countryService.findById(Number(id));
+		if (!countryExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return countryExists;
 	}
 
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateCountryDto: UpdateCountryDto): Promise<Country> {
+		const countryExists = await this.countryService.findById(Number(updateCountryDto.id));
+		if (!countryExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.countryService.update({
-			where: { id: Number(updateCountryDto.id) },
+			where: { id: updateCountryDto.id },
 			data: { title: updateCountryDto.title },
 		});
 	}
@@ -52,6 +63,11 @@ export class CountryController {
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteCountryDto: DeleteCountryDto): Promise<Country> {
-		return this.countryService.delete({ id: Number(deleteCountryDto.id) });
+		const countryExists = await this.countryService.findById(Number(deleteCountryDto.id));
+		if (!countryExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.countryService.delete({ id: deleteCountryDto.id });
 	}
 }

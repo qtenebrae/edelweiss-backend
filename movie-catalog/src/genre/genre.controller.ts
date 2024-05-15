@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpException,
 	HttpStatus,
 	Param,
 	Post,
@@ -20,7 +21,7 @@ import { DeleteGenreDto } from './dto/delete-genre.dto';
 @Controller('genre')
 @ApiTags('Genre')
 export class GenreController {
-	constructor(private genreService: GenreService) {}
+	constructor(private readonly genreService: GenreService) {}
 
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
@@ -37,14 +38,24 @@ export class GenreController {
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Genre> {
-		return this.genreService.findById(id);
+		const genreExists = await this.genreService.findById(Number(id));
+		if (!genreExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return genreExists;
 	}
 
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateGenreDto: UpdateGenreDto): Promise<Genre> {
+		const genreExists = await this.genreService.findById(Number(updateGenreDto.id));
+		if (!genreExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.genreService.update({
-			where: { id: Number(updateGenreDto.id) },
+			where: { id: updateGenreDto.id },
 			data: { title: updateGenreDto.title },
 		});
 	}
@@ -52,6 +63,11 @@ export class GenreController {
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteGenreDto: DeleteGenreDto): Promise<Genre> {
-		return this.genreService.delete({ id: Number(deleteGenreDto.id) });
+		const genreExists = await this.genreService.findById(Number(deleteGenreDto.id));
+		if (!genreExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.genreService.delete({ id: deleteGenreDto.id });
 	}
 }

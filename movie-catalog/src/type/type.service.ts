@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { Type, Prisma } from '@prisma/client';
 
@@ -17,11 +17,7 @@ export class TypeService {
 	}
 
 	async findById(id: number): Promise<Type> {
-		const typeExists = await this.prisma.type.findUnique({ where: { id: Number(id) } });
-		if (!typeExists) {
-			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-		}
-		return typeExists;
+		return await this.prisma.type.findUnique({ where: { id } });
 	}
 
 	async update(params: {
@@ -29,10 +25,6 @@ export class TypeService {
 		data: Prisma.TypeUpdateInput;
 	}): Promise<Type> {
 		const { where, data } = params;
-		const typeExists = await this.prisma.type.findUnique({ where });
-		if (!typeExists) {
-			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-		}
 
 		return this.prisma.type.update({
 			data,
@@ -41,11 +33,6 @@ export class TypeService {
 	}
 
 	async delete(where: Prisma.TypeWhereUniqueInput): Promise<Type> {
-		const typeExists = await this.prisma.type.findUnique({ where });
-		if (!typeExists) {
-			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-		}
-
 		return this.prisma.type.delete({
 			where,
 		});

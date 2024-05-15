@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpException,
 	HttpStatus,
 	Param,
 	Post,
@@ -20,7 +21,7 @@ import { DeleteSexDto } from './dto/delete-sex.dto';
 @Controller('sex')
 @ApiTags('Sex')
 export class SexController {
-	constructor(private sexService: SexService) {}
+	constructor(private readonly sexService: SexService) {}
 
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
@@ -37,14 +38,24 @@ export class SexController {
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Sex> {
-		return this.sexService.findById(id);
+		const sexExists = await this.sexService.findById(Number(id));
+		if (!sexExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return sexExists;
 	}
 
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateSexDto: UpdateSexDto): Promise<Sex> {
+		const sexExists = await this.sexService.findById(Number(updateSexDto.id));
+		if (!sexExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.sexService.update({
-			where: { id: Number(updateSexDto.id) },
+			where: { id: updateSexDto.id },
 			data: { title: updateSexDto.title },
 		});
 	}
@@ -52,6 +63,11 @@ export class SexController {
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteSexDto: DeleteSexDto): Promise<Sex> {
-		return this.sexService.delete({ id: Number(deleteSexDto.id) });
+		const sexExists = await this.sexService.findById(Number(deleteSexDto.id));
+		if (!sexExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.sexService.delete({ id: deleteSexDto.id });
 	}
 }

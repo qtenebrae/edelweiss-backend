@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpException,
 	HttpStatus,
 	Param,
 	Post,
@@ -37,14 +38,24 @@ export class StatusController {
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Status> {
-		return this.statusService.findById(id);
+		const statusExists = await this.statusService.findById(Number(id));
+		if (!statusExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return statusExists;
 	}
 
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateStatusDto: UpdateStatusDto): Promise<Status> {
+		const statusExists = await this.statusService.findById(Number(updateStatusDto.id));
+		if (!statusExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.statusService.update({
-			where: { id: Number(updateStatusDto.id) },
+			where: { id: updateStatusDto.id },
 			data: { title: updateStatusDto.title },
 		});
 	}
@@ -52,6 +63,11 @@ export class StatusController {
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteStatusDto: DeleteStatusDto): Promise<Status> {
-		return this.statusService.delete({ id: Number(deleteStatusDto.id) });
+		const statusExists = await this.statusService.findById(Number(deleteStatusDto.id));
+		if (!statusExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.statusService.delete({ id: deleteStatusDto.id });
 	}
 }

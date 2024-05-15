@@ -2,9 +2,12 @@ import {
 	Body,
 	Controller,
 	Delete,
+	forwardRef,
 	Get,
 	HttpCode,
+	HttpException,
 	HttpStatus,
+	Inject,
 	Param,
 	Post,
 	Put,
@@ -16,15 +19,24 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { DeletePersonDto } from './dto/delete-person.dto';
+import { SexService } from 'src/sex/sex.service';
 
 @Controller('person')
 @ApiTags('Person')
 export class PersonController {
-	constructor(private personService: PersonService) {}
+	constructor(
+		private readonly personService: PersonService,
+		@Inject(forwardRef(() => SexService)) private readonly sexService: SexService,
+	) {}
 
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
 	async create(@Body(new ValidationPipe()) createPersonDto: CreatePersonDto): Promise<Person> {
+		const sexExists = await this.sexService.findById(Number(createPersonDto.sexId));
+		if (!sexExists) {
+			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+		}
+
 		return this.personService.create({
 			firstname: createPersonDto.firstname,
 			lastname: createPersonDto.lastname,
@@ -46,12 +58,27 @@ export class PersonController {
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Person> {
-		return this.personService.findById(id);
+		const personExists = await this.personService.findById(Number(id));
+		if (!personExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return personExists;
 	}
 
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto): Promise<Person> {
+		const personExists = await this.personService.findById(Number(updatePersonDto.id));
+		if (!personExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		const sexExists = await this.sexService.findById(Number(updatePersonDto.sexId));
+		if (!sexExists) {
+			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+		}
+
 		const data = {};
 		if (updatePersonDto.firstname !== undefined) {
 			data['firstname'] = updatePersonDto.firstname;
@@ -73,7 +100,7 @@ export class PersonController {
 		}
 
 		return this.personService.update({
-			where: { id: Number(updatePersonDto.id) },
+			where: { id: updatePersonDto.id },
 			data,
 		});
 	}
@@ -81,6 +108,11 @@ export class PersonController {
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deletePersonDto: DeletePersonDto): Promise<Person> {
-		return this.personService.delete({ id: Number(deletePersonDto.id) });
+		const personExists = await this.personService.findById(Number(deletePersonDto.id));
+		if (!personExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.personService.delete({ id: deletePersonDto.id });
 	}
 }

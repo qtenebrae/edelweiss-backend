@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpException,
 	HttpStatus,
 	Param,
 	Post,
@@ -37,14 +38,24 @@ export class TypeController {
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Type> {
-		return this.typeService.findById(id);
+		const typeExists = await this.typeService.findById(Number(id));
+		if (!typeExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return typeExists;
 	}
 
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateTypeDto: UpdateTypeDto): Promise<Type> {
+		const typeExists = await this.typeService.findById(Number(updateTypeDto.id));
+		if (!typeExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
 		return this.typeService.update({
-			where: { id: Number(updateTypeDto.id) },
+			where: { id: updateTypeDto.id },
 			data: { title: updateTypeDto.title },
 		});
 	}
@@ -52,6 +63,11 @@ export class TypeController {
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteTypeDto: DeleteTypeDto): Promise<Type> {
-		return this.typeService.delete({ id: Number(deleteTypeDto.id) });
+		const typeExists = await this.typeService.findById(Number(deleteTypeDto.id));
+		if (!typeExists) {
+			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+		}
+
+		return this.typeService.delete({ id: deleteTypeDto.id });
 	}
 }

@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap(): Promise<void> {
 	const app = await NestFactory.create(AppModule);
+	app.setGlobalPrefix('catalog');
 
 	const config = new DocumentBuilder()
 		.setTitle('Movie Catalog Service')

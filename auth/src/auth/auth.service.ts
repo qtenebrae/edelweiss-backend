@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { SignupDto } from './dto/signup.dto';
@@ -30,16 +30,15 @@ const adminAt = async () => {
 @Injectable()
 export class AuthService {
 	constructor(
-		private configService: ConfigService,
+		private readonly configService: ConfigService,
 		@InjectModel(UserModel) private readonly userModel: ModelType<UserModel>,
 	) {}
 
-	async signup(signupDto: SignupDto) {
-		const userExists = await this.userModel.findOne({ email: signupDto.email }).exec();
-		if (userExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-		}
+	async findUser(email: string) {
+		return this.userModel.findOne({ email }).exec();
+	}
 
+	async signup(signupDto: SignupDto) {
 		await axios.post(
 			`http://${this.configService.get('KEYCLOAK_HOST')}:${this.configService.get('KEYCLOAK_PORT')}
 		/admin/realms/${this.configService.get('KEYCLOAK_REALM')}/users`,
@@ -80,11 +79,6 @@ export class AuthService {
 	}
 
 	async signin(signinDto: SigninDto) {
-		const userExists = await this.userModel.findOne({ email: signinDto.email }).exec();
-		if (!userExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-		}
-
 		try {
 			const response = await axios.post(
 				`http://${this.configService.get('KEYCLOAK_HOST')}:${this.configService.get('KEYCLOAK_PORT')}
@@ -105,55 +99,47 @@ export class AuthService {
 
 			return response.data;
 		} catch (error) {
-			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+			throw new HttpException(`${error.message}`, error.response.status);
 		}
 	}
 
 	async logout(rt: string) {
-		try {
-			const response = await axios.post(
-				`http://${this.configService.get('KEYCLOAK_HOST')}:${this.configService.get('KEYCLOAK_PORT')}
+		const response = await axios.post(
+			`http://${this.configService.get('KEYCLOAK_HOST')}:${this.configService.get('KEYCLOAK_PORT')}
 			/realms/${this.configService.get('KEYCLOAK_REALM')}/protocol/openid-connect/logout`,
-				{
-					client_id: `${this.configService.get('CLIENT_ID')}`,
-					client_secret: `${this.configService.get('CLIENT_SECRET')}`,
-					refresh_token: rt,
+			{
+				client_id: `${this.configService.get('CLIENT_ID')}`,
+				client_secret: `${this.configService.get('CLIENT_SECRET')}`,
+				refresh_token: rt,
+			},
+			{
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
 				},
-				{
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-					},
-				},
-			);
+			},
+		);
 
-			return response.data;
-		} catch (error) {
-			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		}
+		return response.data;
 	}
 
 	async refreshToken(rt: string) {
-		try {
-			const response = await axios.post(
-				`http://${this.configService.get('KEYCLOAK_HOST')}:${this.configService.get('KEYCLOAK_PORT')}
+		const response = await axios.post(
+			`http://${this.configService.get('KEYCLOAK_HOST')}:${this.configService.get('KEYCLOAK_PORT')}
 			/realms/${this.configService.get('KEYCLOAK_REALM')}/protocol/openid-connect/token`,
-				{
-					client_id: `${this.configService.get('CLIENT_ID')}`,
-					client_secret: `${this.configService.get('CLIENT_SECRET')}`,
-					grant_type: 'refresh_token',
-					refresh_token: rt,
+			{
+				client_id: `${this.configService.get('CLIENT_ID')}`,
+				client_secret: `${this.configService.get('CLIENT_SECRET')}`,
+				grant_type: 'refresh_token',
+				refresh_token: rt,
+			},
+			{
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
 				},
-				{
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-					},
-				},
-			);
+			},
+		);
 
-			return response.data;
-		} catch (error) {
-			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		}
+		return response.data;
 	}
 
 	async introspect(at: string) {
@@ -161,8 +147,8 @@ export class AuthService {
 			`http://${this.configService.get('KEYCLOAK_HOST')}:${this.configService.get('KEYCLOAK_PORT')}
 			/realms/${this.configService.get('KEYCLOAK_REALM')}/protocol/openid-connect/token/introspect`,
 			{
-				client_id: `${this.configService.get('ADMIN_CLIENT_ID')}`,
-				client_secret: `${this.configService.get('ADMIN_CLIENT_SECRET')}`,
+				client_id: `${this.configService.get('CLIENT_ID')}`,
+				client_secret: `${this.configService.get('CLIENT_SECRET')}`,
 				token: at,
 			},
 			{

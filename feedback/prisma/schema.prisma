@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model History {
+  id Int @id @default(autoincrement())
+  movieId Int
+  score Int
+  numberOfEpisodes Int
+  authotId Int
+
+  category Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  title String
+
+  histories History[]
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  movieId Int
+  text String
+  publicationDate DateTime
+  authotId Int
+}
+
+model Feedback {
+  id Int @id @default(autoincrement())
+  movieId Int
+  header String
+  text String
+  score Int
+  publicationDate DateTime
+  authotId Int
+}

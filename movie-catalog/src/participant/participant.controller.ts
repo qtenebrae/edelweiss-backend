@@ -99,37 +99,32 @@ export class ParticipantController {
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		}
 
-		const professionExists = await this.professionService.findById(
-			Number(updateParticipantDto.professionId),
-		);
-		if (!professionExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+		if (updateParticipantDto.professionId !== undefined) {
+			const professionExists = await this.professionService.findById(
+				Number(updateParticipantDto.professionId),
+			);
+			if (!professionExists) {
+				throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+			}
 		}
 
-		const movieExists = await this.movieService.findById(Number(updateParticipantDto.movieId));
-		if (!movieExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+		if (updateParticipantDto.movieId !== undefined) {
+			const movieExists = await this.movieService.findById(Number(updateParticipantDto.movieId));
+			if (!movieExists) {
+				throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+			}
 		}
 
-		const personExists = await this.personService.findById(Number(updateParticipantDto.personId));
-		if (!personExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+		if (updateParticipantDto.personId !== undefined) {
+			const personExists = await this.personService.findById(Number(updateParticipantDto.personId));
+			if (!personExists) {
+				throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+			}
 		}
-
-		const data = {};
-		if (updateParticipantDto.character !== undefined)
-			data['character'] = updateParticipantDto.character;
-
-		if (updateParticipantDto.professionId !== undefined)
-			data['profession'] = { connect: { id: Number(updateParticipantDto.professionId) } };
-		if (updateParticipantDto.movieId !== undefined)
-			data['movie'] = { connect: { id: Number(updateParticipantDto.movieId) } };
-		if (updateParticipantDto.personId !== undefined)
-			data['person'] = { connect: { id: Number(updateParticipantDto.personId) } };
 
 		return this.participantService.update({
 			where: { id: Number(updateParticipantDto.id) },
-			data,
+			data: updateParticipantDto,
 		});
 	}
 

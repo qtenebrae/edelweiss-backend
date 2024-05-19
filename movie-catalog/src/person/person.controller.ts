@@ -74,34 +74,15 @@ export class PersonController {
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		}
 
-		const sexExists = await this.sexService.findById(Number(updatePersonDto.sexId));
-		if (!sexExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-		}
-
-		const data = {};
-		if (updatePersonDto.firstname !== undefined) {
-			data['firstname'] = updatePersonDto.firstname;
-		}
-		if (updatePersonDto.lastname !== undefined) {
-			data['lastname'] = updatePersonDto.lastname;
-		}
-		if (updatePersonDto.middlename !== undefined) {
-			data['middlename'] = updatePersonDto.middlename;
-		}
-		if (updatePersonDto.birthday !== undefined) {
-			data['birthday'] = updatePersonDto.birthday;
-		}
-		if (updatePersonDto.dateOfDeath !== undefined) {
-			data['dateOfDeath'] = updatePersonDto.dateOfDeath;
-		}
 		if (updatePersonDto.sexId !== undefined) {
-			data['sex'] = { connect: { id: Number(updatePersonDto.sexId) } };
+			const sexExists = await this.sexService.findById(Number(updatePersonDto.sexId));
+			if (!sexExists) {
+				throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+			}
 		}
-
 		return this.personService.update({
 			where: { id: updatePersonDto.id },
-			data,
+			data: updatePersonDto,
 		});
 	}
 

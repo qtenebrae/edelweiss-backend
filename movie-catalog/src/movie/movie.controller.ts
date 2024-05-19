@@ -88,36 +88,23 @@ export class MovieController {
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		}
 
-		const typeExists = await this.typeService.findById(Number(updateMovieDto.typeId));
-		if (!typeExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+		if (updateMovieDto.typeId !== undefined) {
+			const typeExists = await this.typeService.findById(Number(updateMovieDto.typeId));
+			if (!typeExists) {
+				throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+			}
 		}
 
-		const statusExists = await this.statusService.findById(Number(updateMovieDto.statusId));
-		if (!statusExists) {
-			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+		if (updateMovieDto.statusId !== undefined) {
+			const statusExists = await this.statusService.findById(Number(updateMovieDto.statusId));
+			if (!statusExists) {
+				throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+			}
 		}
-
-		const data = {};
-		if (updateMovieDto.title !== undefined) data['title'] = updateMovieDto.title;
-		if (updateMovieDto.alternativeTitle !== undefined)
-			data['alternativeTitle'] = updateMovieDto.alternativeTitle;
-		if (updateMovieDto.release !== undefined) data['release'] = updateMovieDto.release;
-		if (updateMovieDto.description !== undefined) data['description'] = updateMovieDto.description;
-		if (updateMovieDto.rating !== undefined) data['rating'] = updateMovieDto.rating;
-		if (updateMovieDto.duration !== undefined) data['duration'] = updateMovieDto.duration;
-		if (updateMovieDto.numberOfEpisodes !== undefined)
-			data['numberOfEpisodes'] = updateMovieDto.numberOfEpisodes;
-		if (updateMovieDto.ageLimit !== undefined) data['ageLimit'] = updateMovieDto.ageLimit;
-		if (updateMovieDto.posterUrl !== undefined) data['posterUrl'] = updateMovieDto.posterUrl;
-		if (updateMovieDto.typeId !== undefined)
-			data['type'] = { connect: { id: Number(updateMovieDto.typeId) } };
-		if (updateMovieDto.statusId !== undefined)
-			data['status'] = { connect: { id: Number(updateMovieDto.statusId) } };
 
 		return this.movieService.update({
 			where: { id: updateMovieDto.id },
-			data,
+			data: updateMovieDto,
 		});
 	}
 

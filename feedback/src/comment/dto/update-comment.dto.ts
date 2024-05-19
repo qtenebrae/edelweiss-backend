@@ -1,30 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateFeedbackDto {
+export class UpdateCommentDto {
 	@IsInt()
+	@ApiProperty()
+	id: number;
+
+	@IsInt()
+	@IsOptional()
 	@ApiProperty()
 	movieId: number;
 
 	@IsString()
 	@IsNotEmpty()
-	@ApiProperty()
-	header: string;
-
-	@IsString()
-	@IsNotEmpty()
+	@IsOptional()
 	@ApiProperty()
 	text: string;
 
-	@IsInt()
-	@ApiProperty()
-	score: number;
-
 	@IsNotEmpty()
+	@IsOptional()
 	@ApiProperty()
 	publicationDate: Date;
 
 	@IsInt()
+	@IsOptional()
 	@ApiProperty()
 	authotId: number;
 }

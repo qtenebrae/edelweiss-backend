@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateFeedbackDto {
+export class CreateReviewDto {
 	@IsInt()
 	@ApiProperty()
 	movieId: number;

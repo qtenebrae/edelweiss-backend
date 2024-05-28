@@ -8,9 +8,11 @@ import { CountryModule } from './country/country.module';
 import { TypeModule } from './type/type.module';
 import { MovieModule } from './movie/movie.module';
 import { ParticipantModule } from './participant/participant.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
 	imports: [
+		ConfigModule.forRoot(),
 		PersonModule,
 		ProfessionModule,
 		SexModule,

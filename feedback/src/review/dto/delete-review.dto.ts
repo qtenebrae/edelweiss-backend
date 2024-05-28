@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt } from 'class-validator';
 
-export class DeleteFeedbackDto {
+export class DeleteReviewDto {
 	@IsInt()
 	@ApiProperty()
 	id: number;

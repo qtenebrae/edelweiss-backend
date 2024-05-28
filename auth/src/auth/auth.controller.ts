@@ -6,14 +6,15 @@ import {
 	HttpException,
 	HttpStatus,
 	Post,
+	Req,
 	ValidationPipe,
-	UsePipes,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { RtDto } from './dto/rt.dto';
+import { Request } from 'express';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -24,7 +25,6 @@ export class AuthController {
 	@HttpCode(HttpStatus.CREATED)
 	async signup(@Body(new ValidationPipe()) signupDto: SignupDto) {
 		const userExists = await this.authService.findUser(signupDto.email);
-		console.log(userExists);
 		if (userExists) {
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
 		}
@@ -63,15 +63,15 @@ export class AuthController {
 		}
 	}
 
-	// @Post('introspect')
-	// @HttpCode(HttpStatus.OK)
-	// async introspect(@Body(new ValidationPipe()) atDto: AtDto) {
-	// 	return this.authService.introspect(atDto.at);
-	// }
-
 	@Post('introspect')
-	@HttpCode(HttpStatus.OK)
-	async introspect(@Headers('Authorization') at: string) {
-		return this.authService.introspect(at);
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async introspect(@Headers('Authorization') at: string, @Req() req: Request) {
+		if (at === undefined) {
+			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+		}
+		const response = await this.authService.introspect(at);
+		if (response.active == false) {
+			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+		}
 	}
 }

@@ -21,6 +21,8 @@ import { DeleteMovieDto } from './dto/delete-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { TypeService } from 'src/type/type.service';
 import { StatusService } from 'src/status/status.service';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout } from 'rxjs';
 
 @Controller('movie')
 @ApiTags('Movie')
@@ -29,6 +31,7 @@ export class MovieController {
 		private readonly movieService: MovieService,
 		@Inject(forwardRef(() => TypeService)) private readonly typeService: TypeService,
 		@Inject(forwardRef(() => StatusService)) private readonly statusService: StatusService,
+		@Inject('INTERNAL') private readonly rabbitClient: ClientProxy,
 	) {}
 
 	@Post('create')
@@ -60,6 +63,35 @@ export class MovieController {
 			status: {
 				connect: { id: Number(createMovieDto.statusId) },
 			},
+			genres: {
+				create: [
+					{
+						genre: {
+							connect: {
+								id: 1,
+							},
+						},
+					},
+					{
+						genre: {
+							connect: {
+								id: 2,
+							},
+						},
+					},
+				],
+			},
+			countries: {
+				create: [
+					{
+						country: {
+							connect: {
+								id: 2,
+							},
+						},
+					},
+				],
+			},
 		});
 	}
 
@@ -76,6 +108,13 @@ export class MovieController {
 		if (!movieExists) {
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		}
+
+		const res = await firstValueFrom(
+			this.rabbitClient
+				.send({ cmd: 'catalog--feedback-for-movie-request' }, id)
+				.pipe(timeout(2000)),
+		);
+		movieExists['reviews'] = res;
 
 		return movieExists;
 	}

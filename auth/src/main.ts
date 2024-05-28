@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap(): Promise<void> {
 	const app = await NestFactory.create(AppModule);
+	app.enableCors({ credentials: true, origin: true });
 
 	const config = new DocumentBuilder()
 		.setTitle('Authentication Service')

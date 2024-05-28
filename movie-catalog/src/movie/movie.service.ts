@@ -15,7 +15,28 @@ export class MovieService {
 	}
 
 	async findById(id: number): Promise<Movie> {
-		return await this.prisma.movie.findUnique({ where: { id } });
+		return await this.prisma.movie.findUnique({
+			where: { id },
+			include: {
+				type: true,
+				status: true,
+				genres: {
+					include: {
+						genre: true,
+					},
+				},
+				countries: {
+					include: {
+						country: true,
+					},
+				},
+				participants: {
+					include: {
+						person: true,
+					},
+				},
+			},
+		});
 	}
 
 	async update(params: {

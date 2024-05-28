@@ -25,11 +25,11 @@ class Settings {
 
 export interface UserModel extends Base {}
 export class UserModel extends TimeStamps {
-	@prop()
-	login: string;
-
 	@prop({ unique: true })
 	email: string;
+
+	@prop()
+	login: string;
 
 	@prop()
 	profile: Profile;

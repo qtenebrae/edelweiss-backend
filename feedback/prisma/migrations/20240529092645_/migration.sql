@@ -36,7 +36,7 @@ CREATE TABLE "Review" (
     "movieId" INTEGER NOT NULL,
     "header" TEXT NOT NULL,
     "text" TEXT NOT NULL,
-    "score" INTEGER NOT NULL,
+    "score" DOUBLE PRECISION NOT NULL,
     "publicationDate" TIMESTAMP(3) NOT NULL,
     "authotId" INTEGER NOT NULL,
 
@@ -55,6 +55,7 @@ CREATE TABLE "Parameter" (
 CREATE TABLE "ParameterEstimation" (
     "reviewId" INTEGER NOT NULL,
     "parametrId" INTEGER NOT NULL,
+    "score" INTEGER NOT NULL,
 
     CONSTRAINT "ParameterEstimation_pkey" PRIMARY KEY ("reviewId","parametrId")
 );

@@ -45,7 +45,7 @@ model Review {
   movieId Int
   header String
   text String
-  score Int
+  score Float
   publicationDate DateTime
   authotId Int
 
@@ -57,7 +57,7 @@ model Parameter {
   title String
 
   review ParameterEstimation[]
-} 
+}
 
 model ParameterEstimation {
   movie Review @relation(fields: [reviewId], references: [id])
@@ -67,4 +67,8 @@ model ParameterEstimation {
   parametrId Int
 
   @@id([reviewId, parametrId])
-} 
+
+  score Int
+}
+
+

@@ -11,6 +11,8 @@ import {
 	Param,
 	Post,
 	Put,
+	UploadedFile,
+	UseInterceptors,
 	ValidationPipe,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
@@ -19,10 +21,13 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { DeleteMovieDto } from './dto/delete-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { TypeService } from 'src/type/type.service';
-import { StatusService } from 'src/status/status.service';
+import { TypeService } from '../type/type.service';
+import { StatusService } from '../status/status.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { extname } from 'path';
+import { diskStorage } from 'multer';
 
 @Controller('movie')
 @ApiTags('Movie')
@@ -47,6 +52,26 @@ export class MovieController {
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
 		}
 
+		const genres = createMovieDto.genresId?.map((id) => {
+			return {
+				genre: {
+					connect: {
+						id,
+					},
+				},
+			};
+		});
+
+		const countries = createMovieDto.countriesId?.map((id) => {
+			return {
+				country: {
+					connect: {
+						id,
+					},
+				},
+			};
+		});
+
 		return this.movieService.create({
 			title: createMovieDto.title,
 			alternativeTitle: createMovieDto.alternativeTitle,
@@ -64,33 +89,10 @@ export class MovieController {
 				connect: { id: Number(createMovieDto.statusId) },
 			},
 			genres: {
-				create: [
-					{
-						genre: {
-							connect: {
-								id: 1,
-							},
-						},
-					},
-					{
-						genre: {
-							connect: {
-								id: 2,
-							},
-						},
-					},
-				],
+				create: genres,
 			},
 			countries: {
-				create: [
-					{
-						country: {
-							connect: {
-								id: 2,
-							},
-						},
-					},
-				],
+				create: countries,
 			},
 		});
 	}
@@ -110,10 +112,9 @@ export class MovieController {
 		}
 
 		const res = await firstValueFrom(
-			this.rabbitClient
-				.send({ cmd: 'catalog--feedback-for-movie-request' }, id)
-				.pipe(timeout(2000)),
+			this.rabbitClient.send({ cmd: 'catalog--reviews-for-movie-request' }, id).pipe(timeout(2000)),
 		);
+
 		movieExists['reviews'] = res;
 
 		return movieExists;
@@ -156,5 +157,29 @@ export class MovieController {
 		}
 
 		return this.movieService.delete({ id: deleteMovieDto.id });
+	}
+
+	@Post('uploadPoster')
+	@HttpCode(HttpStatus.OK)
+	@UseInterceptors(
+		FileInterceptor('poster', {
+			storage: diskStorage({
+				destination: './uploads',
+				filename: (req, file, cb) => {
+					const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+					const ext = extname(file.originalname);
+					cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+				},
+			}),
+		}),
+	)
+	uploadFile(@UploadedFile() file: Express.Multer.File): {
+		message: string;
+		filename: string;
+	} {
+		return {
+			message: 'Файл успешно добавлен!',
+			filename: file.filename,
+		};
 	}
 }

@@ -72,8 +72,32 @@ export class ReviewController {
 		return this.reviewService.delete({ id: deleteReviewDto.id });
 	}
 
-	@MessagePattern({ cmd: 'catalog--feedback-for-movie-request' })
-	async getReviewsByModieId(@Payload() id: number): Promise<Review[]> {
-		return this.reviewService.getReviewsByModieId(Number(id));
+	@MessagePattern({ cmd: 'catalog--reviews-for-movie-request' })
+	async getReviewsByMovieId(@Payload() id: number): Promise<Review[]> {
+		return this.reviewService.getReviewsByMovieId(Number(id));
+	}
+
+	@Post('temp1')
+	@HttpCode(HttpStatus.OK)
+	async temp1() {
+		return 'test';
+	}
+
+	@Delete('temp2')
+	@HttpCode(HttpStatus.OK)
+	async temp2() {
+		return 'test';
+	}
+
+	@Put('temp3')
+	@HttpCode(HttpStatus.OK)
+	async temp3() {
+		return 'test';
+	}
+
+	@Get('temp4')
+	@HttpCode(HttpStatus.OK)
+	async temp4() {
+		return 'test';
 	}
 }

@@ -38,7 +38,7 @@ export class ReviewService {
 		});
 	}
 
-	async getReviewsByModieId(id: number): Promise<Review[]> {
+	async getReviewsByMovieId(id: number): Promise<Review[]> {
 		return this.prisma.review.findMany({
 			where: {
 				movieId: id,

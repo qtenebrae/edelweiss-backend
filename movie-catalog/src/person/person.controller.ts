@@ -19,7 +19,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { DeletePersonDto } from './dto/delete-person.dto';
-import { SexService } from 'src/sex/sex.service';
+import { SexService } from '../sex/sex.service';
 
 @Controller('person')
 @ApiTags('Person')

@@ -19,9 +19,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { DeleteParticipantDto } from './dto/delete-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
-import { ProfessionService } from 'src/profession/profession.service';
-import { MovieService } from 'src/movie/movie.service';
-import { PersonService } from 'src/person/person.service';
+import { ProfessionService } from '../profession/profession.service';
+import { MovieService } from '../movie/movie.service';
+import { PersonService } from '../person/person.service';
 
 @Controller('participant')
 @ApiTags('Participant')

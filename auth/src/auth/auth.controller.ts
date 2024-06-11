@@ -6,21 +6,24 @@ import {
 	HttpException,
 	HttpStatus,
 	Post,
+	Put,
 	Req,
 	ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { RtDto } from './dto/rt.dto';
 import { Request } from 'express';
+import { ResetPasswordDto } from './dto/reset.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
+	@ApiOperation({ summary: 'Регистрация нового пользователя' })
 	@Post('signup')
 	@HttpCode(HttpStatus.CREATED)
 	async signup(@Body(new ValidationPipe()) signupDto: SignupDto) {
@@ -32,6 +35,7 @@ export class AuthController {
 		return this.authService.signup(signupDto);
 	}
 
+	@ApiOperation({ summary: 'Вход пользователя в систему' })
 	@Post('signin')
 	@HttpCode(HttpStatus.OK)
 	async singin(@Body(new ValidationPipe()) signinDto: SigninDto) {
@@ -43,6 +47,7 @@ export class AuthController {
 		return await this.authService.signin(signinDto);
 	}
 
+	@ApiOperation({ summary: 'Выход пользователя из системы' })
 	@Post('logout')
 	@HttpCode(HttpStatus.OK)
 	async logout(@Body(new ValidationPipe()) rtDto: RtDto) {
@@ -53,6 +58,7 @@ export class AuthController {
 		}
 	}
 
+	@ApiOperation({ summary: 'Обновление токена доступа' })
 	@Post('refresh')
 	@HttpCode(HttpStatus.OK)
 	async refresh(@Body(new ValidationPipe()) rtDto: RtDto) {
@@ -63,8 +69,9 @@ export class AuthController {
 		}
 	}
 
+	@ApiOperation({ summary: 'Проверка токена доступа' })
 	@Post('introspect')
-	@HttpCode(HttpStatus.NO_CONTENT)
+	@HttpCode(HttpStatus.OK)
 	async introspect(@Headers('Authorization') at: string, @Req() req: Request) {
 		if (at === undefined) {
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -73,5 +80,14 @@ export class AuthController {
 		if (response.active == false) {
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		}
+
+		return response;
+	}
+
+	@ApiOperation({ summary: 'Обновление пароля пользователя' })
+	@Put('reset-password')
+	@HttpCode(HttpStatus.OK)
+	async resetPasswrod(@Body(new ValidationPipe()) resetDto: ResetPasswordDto) {
+		return null;
 	}
 }

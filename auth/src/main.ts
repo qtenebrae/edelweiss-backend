@@ -7,8 +7,8 @@ async function bootstrap(): Promise<void> {
 	app.enableCors({ credentials: true, origin: true });
 
 	const config = new DocumentBuilder()
-		.setTitle('Authentication Service')
-		.setDescription('API of the Authentication service')
+		.setTitle('User Service')
+		.setDescription('API of the User service')
 		.setVersion('1.0')
 		.build();
 	const document = SwaggerModule.createDocument(app, config);

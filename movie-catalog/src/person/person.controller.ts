@@ -11,6 +11,8 @@ import {
 	Param,
 	Post,
 	Put,
+	UploadedFile,
+	UseInterceptors,
 	ValidationPipe,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
@@ -20,6 +22,9 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { DeletePersonDto } from './dto/delete-person.dto';
 import { SexService } from '../sex/sex.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('person')
 @ApiTags('Person')
@@ -32,6 +37,8 @@ export class PersonController {
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
 	async create(@Body(new ValidationPipe()) createPersonDto: CreatePersonDto): Promise<Person> {
+		console.log(createPersonDto);
+
 		const sexExists = await this.sexService.findById(Number(createPersonDto.sexId));
 		if (!sexExists) {
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
@@ -43,6 +50,7 @@ export class PersonController {
 			middlename: createPersonDto.middlename,
 			birthday: createPersonDto.birthday,
 			dateOfDeath: createPersonDto.dateOfDeath,
+			photoUrl: createPersonDto.photoUrl,
 			sex: {
 				connect: { id: Number(createPersonDto.sexId) },
 			},
@@ -95,5 +103,29 @@ export class PersonController {
 		}
 
 		return this.personService.delete({ id: deletePersonDto.id });
+	}
+
+	@Post('uploadPhoto')
+	@HttpCode(HttpStatus.OK)
+	@UseInterceptors(
+		FileInterceptor('photo', {
+			storage: diskStorage({
+				destination: './uploads',
+				filename: (req, file, cb) => {
+					const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+					const ext = extname(file.originalname);
+					cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+				},
+			}),
+		}),
+	)
+	uploadFile(@UploadedFile() file: Express.Multer.File): {
+		message: string;
+		filename: string;
+	} {
+		return {
+			message: 'Файл успешно добавлен!',
+			filename: file.filename,
+		};
 	}
 }

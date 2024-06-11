@@ -65,7 +65,12 @@ export class AuthService {
 			},
 		);
 
+		const user = await this.signin({ email: signupDto.email, password: signupDto.password });
+
+		const payload = await this.introspect(user.access_token);
+
 		const newUser = new this.userModel({
+			id: payload.sub,
 			login: signupDto.login,
 			email: signupDto.email,
 			profile: {

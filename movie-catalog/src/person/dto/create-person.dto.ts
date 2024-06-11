@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePersonDto {
 	@IsString()
@@ -23,7 +23,13 @@ export class CreatePersonDto {
 
 	@IsNotEmpty()
 	@ApiProperty()
+	@IsOptional()
 	dateOfDeath: Date;
+
+	@IsString()
+	@IsNotEmpty()
+	@ApiProperty()
+	photoUrl: string;
 
 	@IsInt()
 	@ApiProperty()

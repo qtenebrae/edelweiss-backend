@@ -26,6 +26,9 @@ class Settings {
 export interface UserModel extends Base {}
 export class UserModel extends TimeStamps {
 	@prop({ unique: true })
+	id: string;
+
+	@prop({ unique: true })
 	email: string;
 
 	@prop()

@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { GenreService } from './genre.service';
 import { Genre } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
 import { DeleteGenreDto } from './dto/delete-genre.dto';
@@ -23,18 +23,21 @@ import { DeleteGenreDto } from './dto/delete-genre.dto';
 export class GenreController {
 	constructor(private readonly genreService: GenreService) {}
 
+	@ApiOperation({ summary: 'Добавление новго жанра' })
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
 	async create(@Body(new ValidationPipe()) createGenreDto: CreateGenreDto): Promise<Genre> {
 		return this.genreService.create({ title: createGenreDto.title });
 	}
 
+	@ApiOperation({ summary: 'Получение списка жанров' })
 	@Get('findAll')
 	@HttpCode(HttpStatus.OK)
 	async findAll(): Promise<Genre[]> {
 		return this.genreService.findAll();
 	}
 
+	@ApiOperation({ summary: 'Получение жанра по идентификатору' })
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Genre> {
@@ -46,6 +49,7 @@ export class GenreController {
 		return genreExists;
 	}
 
+	@ApiOperation({ summary: 'Обновление жанра' })
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateGenreDto: UpdateGenreDto): Promise<Genre> {
@@ -60,6 +64,7 @@ export class GenreController {
 		});
 	}
 
+	@ApiOperation({ summary: 'Удаление жанра' })
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteGenreDto: DeleteGenreDto): Promise<Genre> {

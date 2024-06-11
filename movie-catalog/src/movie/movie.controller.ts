@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { Movie } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { DeleteMovieDto } from './dto/delete-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
@@ -39,6 +39,7 @@ export class MovieController {
 		@Inject('INTERNAL') private readonly rabbitClient: ClientProxy,
 	) {}
 
+	@ApiOperation({ summary: 'Добавление нового фильма' })
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
 	async create(@Body(new ValidationPipe()) createMovieDto: CreateMovieDto): Promise<Movie> {
@@ -97,12 +98,21 @@ export class MovieController {
 		});
 	}
 
+	@ApiOperation({ summary: 'Поиск фильмов по различным критериям' })
+	@Get('search')
+	@HttpCode(HttpStatus.OK)
+	async search(): Promise<Movie[]> {
+		return this.movieService.findAll();
+	}
+
+	@ApiOperation({ summary: 'Получение списка фильмов' })
 	@Get('findAll')
 	@HttpCode(HttpStatus.OK)
 	async findAll(): Promise<Movie[]> {
 		return this.movieService.findAll();
 	}
 
+	@ApiOperation({ summary: 'Получение данных о фильме по идентификатору' })
 	@Get('findById/:id')
 	@HttpCode(HttpStatus.OK)
 	async findById(@Param('id') id: number): Promise<Movie> {
@@ -111,15 +121,16 @@ export class MovieController {
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		}
 
-		const res = await firstValueFrom(
-			this.rabbitClient.send({ cmd: 'catalog--reviews-for-movie-request' }, id).pipe(timeout(2000)),
+		const response = await firstValueFrom(
+			this.rabbitClient.send({ cmd: 'catalog-reviews-for-movie-request' }, id).pipe(timeout(2000)),
 		);
 
-		movieExists['reviews'] = res;
+		movieExists['reviews'] = response;
 
 		return movieExists;
 	}
 
+	@ApiOperation({ summary: 'Обновление данных фильма' })
 	@Put('update')
 	@HttpCode(HttpStatus.OK)
 	async update(@Body(new ValidationPipe()) updateMovieDto: UpdateMovieDto): Promise<Movie> {
@@ -148,6 +159,7 @@ export class MovieController {
 		});
 	}
 
+	@ApiOperation({ summary: 'Удаление данных о фильме' })
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Body(new ValidationPipe()) deleteMovieDto: DeleteMovieDto): Promise<Movie> {
@@ -159,6 +171,7 @@ export class MovieController {
 		return this.movieService.delete({ id: deleteMovieDto.id });
 	}
 
+	@ApiOperation({ summary: 'Загрузка постера для фильма' })
 	@Post('uploadPoster')
 	@HttpCode(HttpStatus.OK)
 	@UseInterceptors(

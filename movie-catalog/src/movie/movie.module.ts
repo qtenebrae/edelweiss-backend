@@ -22,7 +22,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 					transport: Transport.RMQ,
 					options: {
 						urls: [`${configService.get('RABBIT_URL')}`],
-						queue: 'qtenebrae',
+						queue: 'edelweiss',
 					},
 				}),
 				inject: [ConfigService],

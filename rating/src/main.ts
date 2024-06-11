@@ -7,7 +7,7 @@ import { Transport } from '@nestjs/microservices';
 async function bootstrap(): Promise<void> {
 	const app = await NestFactory.create(AppModule);
 	app.enableCors({ credentials: true, origin: true });
-	app.setGlobalPrefix('feedback');
+	app.setGlobalPrefix('rating');
 
 	const configService = app.get(ConfigService);
 	app.connectMicroservice({
@@ -19,15 +19,15 @@ async function bootstrap(): Promise<void> {
 	});
 
 	const config = new DocumentBuilder()
-		.setTitle('Feedback Service')
-		.setDescription('API of the feedback service')
+		.setTitle('Rating Service')
+		.setDescription('API of the Rating service')
 		.setVersion('1.0')
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('api', app, document);
 
 	await app.startAllMicroservices();
-	await app.listen(3003);
+	await app.listen(3004);
 }
 
 bootstrap();

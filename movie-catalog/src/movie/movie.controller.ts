@@ -73,6 +73,23 @@ export class MovieController {
 			};
 		});
 
+		const participants = createMovieDto.participants.map((item) => {
+			return {
+				profession: {
+					connect: {
+						id: item.professionId,
+					},
+				},
+				person: {
+					connect: {
+						id: item.personId,
+					},
+				},
+			};
+		});
+
+		console.log(createMovieDto);
+
 		return this.movieService.create({
 			title: createMovieDto.title,
 			alternativeTitle: createMovieDto.alternativeTitle,
@@ -94,6 +111,9 @@ export class MovieController {
 			},
 			countries: {
 				create: countries,
+			},
+			participants: {
+				create: participants,
 			},
 		});
 	}

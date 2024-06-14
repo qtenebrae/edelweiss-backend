@@ -37,8 +37,6 @@ export class PersonController {
 	@Post('create')
 	@HttpCode(HttpStatus.CREATED)
 	async create(@Body(new ValidationPipe()) createPersonDto: CreatePersonDto): Promise<Person> {
-		console.log(createPersonDto);
-
 		const sexExists = await this.sexService.findById(Number(createPersonDto.sexId));
 		if (!sexExists) {
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);

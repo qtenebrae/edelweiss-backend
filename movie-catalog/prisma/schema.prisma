@@ -98,7 +98,7 @@ model Person {
   middlename String
   birthday DateTime
   dateOfDeath DateTime?
-  photoUrl String
+  photoUrl String?
 
   sex Sex @relation(fields: [sexId], references: [id])
   sexId Int

@@ -63,4 +63,13 @@ export class CreateMovieDto {
 	@ApiProperty()
 	@IsOptional()
 	countriesId?: number[];
+
+	participants: Participant[];
+}
+
+interface Participant {
+	character?: string;
+	professionId: number;
+	movieId: number;
+	personId: number;
 }

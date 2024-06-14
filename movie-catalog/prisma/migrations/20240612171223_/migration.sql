@@ -79,8 +79,8 @@ CREATE TABLE "Person" (
     "lastname" TEXT NOT NULL,
     "middlename" TEXT NOT NULL,
     "birthday" TIMESTAMP(3) NOT NULL,
-    "dateOfDeath" TIMESTAMP(3) NOT NULL,
-    "photoUrl" TEXT NOT NULL,
+    "dateOfDeath" TIMESTAMP(3),
+    "photoUrl" TEXT,
     "sexId" INTEGER NOT NULL,
 
     CONSTRAINT "Person_pkey" PRIMARY KEY ("id")

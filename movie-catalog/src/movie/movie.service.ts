@@ -33,6 +33,7 @@ export class MovieService {
 				participants: {
 					include: {
 						person: true,
+						profession: true,
 					},
 				},
 			},

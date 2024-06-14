@@ -22,12 +22,11 @@ export class CreatePersonDto {
 	birthday: Date;
 
 	@IsNotEmpty()
-	@ApiProperty()
 	@IsOptional()
+	@ApiProperty()
 	dateOfDeath: Date;
 
 	@IsString()
-	@IsNotEmpty()
 	@ApiProperty()
 	photoUrl: string;
 

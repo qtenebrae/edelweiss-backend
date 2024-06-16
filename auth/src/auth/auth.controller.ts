@@ -5,6 +5,7 @@ import {
 	HttpCode,
 	HttpException,
 	HttpStatus,
+	Inject,
 	Post,
 	Put,
 	Req,
@@ -17,17 +18,21 @@ import { SigninDto } from './dto/signin.dto';
 import { RtDto } from './dto/rt.dto';
 import { Request } from 'express';
 import { ResetPasswordDto } from './dto/reset.dto';
+import { ProfileService } from 'src/profile/profile.service';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		@Inject(ProfileService) private readonly profileService: ProfileService,
+	) {}
 
 	@ApiOperation({ summary: 'Регистрация нового пользователя' })
 	@Post('signup')
 	@HttpCode(HttpStatus.CREATED)
 	async signup(@Body(new ValidationPipe()) signupDto: SignupDto) {
-		const userExists = await this.authService.findUser(signupDto.email);
+		const userExists = await this.profileService.findUserByEmail(signupDto.email);
 		if (userExists) {
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
 		}
@@ -39,7 +44,7 @@ export class AuthController {
 	@Post('signin')
 	@HttpCode(HttpStatus.OK)
 	async singin(@Body(new ValidationPipe()) signinDto: SigninDto) {
-		const userExists = await this.authService.findUser(signinDto.email);
+		const userExists = await this.profileService.findUserByEmail(signinDto.email);
 		if (!userExists) {
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
 		}

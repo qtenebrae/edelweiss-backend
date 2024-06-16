@@ -44,10 +44,10 @@ model Genre {
 }
 
 model GenreOfMovie {
-  movie Movie @relation(fields: [movieId], references: [id])
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId Int
 
-  genre Genre @relation(fields: [genreId], references: [id])
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
   genreId Int
 
   @@id([movieId, genreId])
@@ -61,10 +61,10 @@ model Country {
 }
 
 model CountryOfProduction {
-  movie Movie @relation(fields: [movieId], references: [id])
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId Int
 
-  country Country @relation(fields: [countryId], references: [id])
+  country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId Int
 
   @@id([movieId, countryId])
@@ -117,12 +117,12 @@ model Participant {
   id Int @id @default(autoincrement())
   character String?
   
-  profession Profession @relation(fields: [professionId], references: [id])
+  profession Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
   professionId Int
 
-  movie Movie @relation(fields: [movieId], references: [id])
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId Int
 
-  person Person @relation(fields: [personId], references: [id])
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
   personId Int
 }

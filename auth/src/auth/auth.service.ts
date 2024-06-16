@@ -1,11 +1,9 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
-import { InjectModel } from '@m8a/nestjs-typegoose';
-import { ModelType } from '@typegoose/typegoose/lib/types';
-import { UserModel } from './auth.model/auth.model';
+import { ProfileService } from 'src/profile/profile.service';
 
 const adminAt = async () => {
 	const configService = new ConfigService();
@@ -31,12 +29,8 @@ const adminAt = async () => {
 export class AuthService {
 	constructor(
 		private readonly configService: ConfigService,
-		@InjectModel(UserModel) private readonly userModel: ModelType<UserModel>,
+		@Inject(ProfileService) private readonly profileService: ProfileService,
 	) {}
-
-	async findUser(email: string) {
-		return this.userModel.findOne({ email }).exec();
-	}
 
 	async signup(signupDto: SignupDto) {
 		await axios.post(
@@ -69,7 +63,7 @@ export class AuthService {
 
 		const payload = await this.introspect(user.access_token);
 
-		const newUser = new this.userModel({
+		const newUser = await this.profileService.saveUser({
 			id: payload.sub,
 			login: signupDto.login,
 			email: signupDto.email,
@@ -80,7 +74,7 @@ export class AuthService {
 			settings: {},
 		});
 
-		return newUser.save();
+		return newUser;
 	}
 
 	async signin(signinDto: SigninDto) {

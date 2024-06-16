@@ -16,6 +16,22 @@ export class HistoryService {
 		return this.prisma.history.findMany();
 	}
 
+	async findWhere(data: { authorId: string; movieId: number }): Promise<History[]> {
+		const where = {};
+
+		if (data.authorId) {
+			where['authorId'] = data.authorId;
+		}
+
+		if (data.movieId) {
+			where['movieId'] = Number(data.movieId);
+		}
+
+		return this.prisma.history.findMany({
+			where,
+		});
+	}
+
 	async findById(id: number): Promise<History> {
 		return this.prisma.history.findUnique({ where: { id } });
 	}

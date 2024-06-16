@@ -21,10 +21,9 @@ export class UpdateHistoryDto {
 	@ApiProperty()
 	numberOfEpisodes: number;
 
-	@IsInt()
 	@IsOptional()
 	@ApiProperty()
-	authotId: number;
+	authorId: string;
 
 	@IsInt()
 	@IsOptional()

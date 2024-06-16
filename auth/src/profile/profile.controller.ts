@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -10,12 +10,14 @@ export class ProfileController {
 	@ApiOperation({ summary: 'Сохранение данных нового пользователя' })
 	@Post('save')
 	@HttpCode(HttpStatus.OK)
-	async save(@Param('id') id: number) {}
+	async save() {}
 
 	@ApiOperation({ summary: 'Получение данных пользователя' })
-	@Get('get')
+	@Post('get')
 	@HttpCode(HttpStatus.OK)
-	async userById(@Param('id') id: number) {}
+	async userById(@Body() data: { id: string }) {
+		return this.profileService.findUserById(data.id);
+	}
 
 	@ApiOperation({ summary: 'Обновление личных данных' })
 	@Put('update-profile')

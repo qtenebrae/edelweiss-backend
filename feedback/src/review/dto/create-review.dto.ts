@@ -24,7 +24,6 @@ export class CreateReviewDto {
 	@ApiProperty()
 	publicationDate: Date;
 
-	@IsInt()
 	@ApiProperty()
-	authotId: number;
+	authorId: string;
 }

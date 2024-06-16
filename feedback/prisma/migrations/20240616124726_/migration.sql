@@ -2,10 +2,10 @@
 CREATE TABLE "History" (
     "id" SERIAL NOT NULL,
     "movieId" INTEGER NOT NULL,
-    "score" INTEGER NOT NULL,
-    "numberOfEpisodes" INTEGER NOT NULL,
+    "score" INTEGER,
+    "numberOfEpisodes" INTEGER NOT NULL DEFAULT 0,
     "modifiedDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "authotId" INTEGER NOT NULL,
+    "authorId" TEXT NOT NULL,
     "categoryId" INTEGER NOT NULL,
 
     CONSTRAINT "History_pkey" PRIMARY KEY ("id")
@@ -25,7 +25,7 @@ CREATE TABLE "Comment" (
     "movieId" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
     "publicationDate" TIMESTAMP(3) NOT NULL,
-    "authotId" INTEGER NOT NULL,
+    "authorId" TEXT NOT NULL,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
 );
@@ -38,7 +38,7 @@ CREATE TABLE "Review" (
     "text" TEXT NOT NULL,
     "score" DOUBLE PRECISION NOT NULL,
     "publicationDate" TIMESTAMP(3) NOT NULL,
-    "authotId" INTEGER NOT NULL,
+    "authorId" TEXT NOT NULL,
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
 );

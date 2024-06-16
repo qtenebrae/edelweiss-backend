@@ -88,8 +88,6 @@ export class MovieController {
 			};
 		});
 
-		console.log(createMovieDto);
-
 		return this.movieService.create({
 			title: createMovieDto.title,
 			alternativeTitle: createMovieDto.alternativeTitle,
@@ -214,5 +212,11 @@ export class MovieController {
 			message: 'Файл успешно добавлен!',
 			filename: file.filename,
 		};
+	}
+
+	@Post('getMovieByIds')
+	@HttpCode(HttpStatus.OK)
+	async getMoviesByIds(@Body() { ids }: { ids: number[] }): Promise<Movie[]> {
+		return this.movieService.getMoviesByIds(ids);
 	}
 }

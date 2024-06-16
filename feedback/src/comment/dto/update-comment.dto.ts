@@ -22,8 +22,7 @@ export class UpdateCommentDto {
 	@ApiProperty()
 	publicationDate: Date;
 
-	@IsInt()
 	@IsOptional()
 	@ApiProperty()
-	authotId: number;
+	authorId: string;
 }

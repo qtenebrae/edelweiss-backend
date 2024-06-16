@@ -16,10 +16,10 @@ datasource db {
 model History {
   id Int @id @default(autoincrement())
   movieId Int
-  score Int
-  numberOfEpisodes Int
+  score Int? 
+  numberOfEpisodes Int @default(0)
   modifiedDate DateTime @default(now())
-  authotId Int
+  authorId String
 
   category Category @relation(fields: [categoryId], references: [id])
   categoryId Int
@@ -37,7 +37,7 @@ model Comment {
   movieId Int
   text String
   publicationDate DateTime
-  authotId Int
+  authorId String
 }
 
 model Review {
@@ -47,7 +47,7 @@ model Review {
   text String
   score Float
   publicationDate DateTime
-  authotId Int
+  authorId String
 
   parameters ParameterEstimation[]
 }

@@ -15,7 +15,6 @@ export class CreateCommentDto {
 	@ApiProperty()
 	publicationDate: Date;
 
-	@IsInt()
 	@ApiProperty()
-	authotId: number;
+	authorId: string;
 }

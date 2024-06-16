@@ -20,7 +20,6 @@ import { CreateHistoryDto } from './dto/create-history.dto';
 import { DeleteHistoryDto } from './dto/delete-history.dto';
 import { UpdateHistoryDto } from './dto/update-history.dto';
 import { CategoryService } from 'src/category/category.service';
-import { timeStamp } from 'console';
 
 @Controller('history')
 @ApiTags('History')
@@ -42,7 +41,7 @@ export class HistoryController {
 			movieId: createHistoryDto.movieId,
 			score: createHistoryDto.score,
 			numberOfEpisodes: createHistoryDto.numberOfEpisodes,
-			authotId: createHistoryDto.authotId,
+			authorId: createHistoryDto.authorId,
 			category: {
 				connect: {
 					id: Number(createHistoryDto.categoryId),
@@ -55,6 +54,12 @@ export class HistoryController {
 	@HttpCode(HttpStatus.OK)
 	async findAll(): Promise<History[]> {
 		return this.historyService.findAll();
+	}
+
+	@Post('findWhere')
+	@HttpCode(HttpStatus.OK)
+	async findWhere(@Body() data: { authorId: string; movieId: number }): Promise<History[]> {
+		return this.historyService.findWhere(data);
 	}
 
 	@Get('findById/:id')

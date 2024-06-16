@@ -33,8 +33,7 @@ export class UpdateReviewDto {
 	@ApiProperty()
 	publicationDate: Date;
 
-	@IsInt()
 	@IsOptional()
 	@ApiProperty()
-	authotId: number;
+	authorId: string;
 }

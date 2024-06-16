@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt } from 'class-validator';
+import { IsInt, IsOptional } from 'class-validator';
 
 export class CreateHistoryDto {
 	@IsInt()
@@ -8,15 +8,16 @@ export class CreateHistoryDto {
 
 	@IsInt()
 	@ApiProperty()
+	@IsOptional()
 	score: number;
 
 	@IsInt()
 	@ApiProperty()
+	@IsOptional()
 	numberOfEpisodes: number;
 
-	@IsInt()
 	@ApiProperty()
-	authotId: number;
+	authorId: string;
 
 	@IsInt()
 	@ApiProperty()

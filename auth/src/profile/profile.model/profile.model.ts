@@ -23,8 +23,8 @@ class Settings {
 	notifications?: boolean;
 }
 
-export interface UserModel extends Base {}
-export class UserModel extends TimeStamps {
+export interface ProfileModel extends Base {}
+export class ProfileModel extends TimeStamps {
 	@prop({ unique: true })
 	id: string;
 
